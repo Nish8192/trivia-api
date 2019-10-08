@@ -16,11 +16,11 @@ migrate = Migrate(app, db)
 
 from models import Questions_Answers
 
-@app.route("/")
+@app.route("/", methods=['GET'])
 def hello():
     return "Hello World!"
 
-@app.route("/getAllQuestions")
+@app.route("/getAllQuestions", methods=['GET'])
 def get_all_questions():
     try:
         questions_answers = Questions_Answers.query.all()
@@ -28,14 +28,16 @@ def get_all_questions():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/addQuestion")
+@app.route("/addQuestion", methods=['POST'])
 def add_question():
-    question = request.args.get('question')
-    option1 = request.args.get('option1')
-    option2 = request.args.get('option2')
-    option3 = request.args.get('option3')
-    option4 = request.args.get('option4')
-    correct_answer = request.args.get('correct_answer')
+    if not request.form.get('question') or not request.form.get('option1') or not request.form.get('option2') or not request.form.get('option3') or not request.form.get('option4') or not request.form.get('correct_answer'):
+        return jsonify({'error': 'Invalid data'}), status.HTTP_400_BAD_REQUEST
+    question = request.form.get('question')
+    option1 = request.form.get('option1')
+    option2 = request.form.get('option2')
+    option3 = request.form.get('option3')
+    option4 = request.form.get('option4')
+    correct_answer = request.form.get('correct_answer')
     try:
         question_answer = Questions_Answers(
             question=question,
@@ -44,10 +46,9 @@ def add_question():
             option3=option3,
             option4=option4,
             correct_answer=correct_answer,
-
         )
         db.session.add(question_answer)
         db.session.commit()
-        return "Question and answers added. id={}".format(question_answer.id)
+        return question_answer.serialize(), status.HTTP_201_CREATED
     except Exception as e:
 	    return(str(e))
