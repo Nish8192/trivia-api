@@ -24,14 +24,19 @@ def hello():
 def get_all_questions():
     try:
         questions_answers = Questions_Answers.query.all()
-        return jsonify([e.serialize() for e in questions_answers]), status.HTTP_200_OK
+        if len(questions_answers) == 0:
+            return "No data available!", status.HTTP_200_OK
+        else:
+            return jsonify([e.serialize() for e in questions_answers]), status.HTTP_200_OK
     except Exception as e:
 	    return(str(e))
 
 @app.route("/addQuestion", methods=['POST'])
 def add_question():
     if not request.form.get('question') or not request.form.get('option1') or not request.form.get('option2') or not request.form.get('option3') or not request.form.get('option4') or not request.form.get('correct_answer'):
-        return jsonify({'error': 'Invalid data'}), status.HTTP_400_BAD_REQUEST
+        return jsonify({'error': 'Missing data!'}), status.HTTP_400_BAD_REQUEST
+    if not type(request.form.get('question')) is str or not type(request.form.get('option1')) is str or not type(request.form.get('option2')) is str or not type(request.form.get('option3')) is str or not type(request.form.get('option4')) is str or not type(int(request.form.get('correct_answer'))) is int:
+        return jsonify({'error': 'Invalid data types!'}), status.HTTP_400_BAD_REQUEST
     question = request.form.get('question')
     option1 = request.form.get('option1')
     option2 = request.form.get('option2')
