@@ -37,8 +37,18 @@ class TriviaTest(unittest.TestCase):
     self.assertEqual(result.status_code, 200)
   def test_add_question(self):
     result = self.app.post('/addQuestion',
-    data=dict(question="When was Python first released?", option1="1996", option2="1987", option3="1989", option4="1994", correct_answer="3"), follow_redirects=True)
+      data=dict(question="When was Python first released?", option1="1996", option2="1987", option3="1989", option4="1994", correct_answer="3"), follow_redirects=True)
     self.assertEqual(result.status_code, 201)
+
+  def test_add_question_bad_data_type(self):
+    result = self.app.post('/addQuestion',
+      data=dict(question="When was Python first released?", option1="1996", option2="1987", option3="1989", option4="1994"), follow_redirects=True)
+    self.assertEqual(result.status_code, 400)
+
+  def test_add_question_incomplete_data(self):
+    result = self.app.post('/addQuestion',
+      data=dict(question="When was Python first released?", option1="1996"), follow_redirects=True)
+    self.assertEqual(result.status_code, 400)
 
   def test_equal_numbers(self):
     self.assertEqual(2, 2)
