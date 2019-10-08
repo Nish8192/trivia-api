@@ -25,7 +25,7 @@ def get_all_questions():
     try:
         questions_answers = Questions_Answers.query.all()
         if len(questions_answers) == 0:
-            return "No data available!", status.HTTP_200_OK
+            return jsonify(["No data available!"]), status.HTTP_200_OK
         else:
             return jsonify([e.serialize() for e in questions_answers]), status.HTTP_200_OK
     except Exception as e:
